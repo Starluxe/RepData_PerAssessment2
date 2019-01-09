@@ -1,0 +1,45 @@
+## Analysis of environmental events that have the greatest impact in the US.
+    Created by Luciano Guerra
+
+### Synonpsis  
+
+In this report we analyse the last years data recorded by the U.S. National Oceanic and Atmospheric Administration's (NOAA) in their storm database. In this database, we have all events from 1950 until the end of November 2011. In this database NOAA tracks characteristics of major storms and weather events in the United States.And the final goal of this analisys is to identify the most dangerous events in two ways: fatalities and injuries produced by one side, and property damages by the other side.
+
+### Data Processing
+All data is provided by  [U.S. National Oceanic and Atmospheric Administration's (NOAA)](https://www.noaa.gov)
+Analisys data is downloaded from  [StormData](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2)
+and is saved in  [working directory](E:/Luciano/R_WorkingDir/Reproducible Research/RepData_PeerAssessment2").
+
+Prepare working folder:
+```{r createwfolder, echo=TRUE}
+# URLfile <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+mywd <- "E:/Luciano/R_WorkingDir/Reproducible Research/RepData_PeerAssessment2"
+actwd <- getwd()
+if (actwd != mywd){
+    setwd(mywd)
+}
+rm(list = ls())
+filelist <- dir()
+if ("FStormData.csv.bz2" %in% filelist){
+    print("Start analisys.")
+} else{
+    print("To perform analisys donwload file and copy it with FStormData.bz2 name")
+    knitr::knit_exit()
+}
+```
+Unzip data and trasnfer all information to a data frame
+Load and clean data
+```{r loaddata, echo=TRUE, cache=TRUE}
+    stormdata <- read.csv(file = "./FStormData.csv.bz2")
+    # Clean data
+    stormdata$EVTYPE <- toupper(stormdata$EVTYPE)
+    stormdata$PROPDMGEXP <- toupper(stormdata$PROPDMGEXP)
+    stormdata$CROPDMGEXP <- toupper(stormdata$CROPDMGEXP)
+    stormdata$BGN_DATE <- as.POSIXlt(stormdata$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
+```
+#### Dangerous Events with respect to Population Health
+#### Economic Effects of Weather Events
+
+### Results
+####  1.- Health impact
+####  2.- Economic impact
