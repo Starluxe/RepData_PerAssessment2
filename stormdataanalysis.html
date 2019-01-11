@@ -213,18 +213,120 @@ if (&quot;FStormData.csv.bz2&quot; %in% filelist){
     knitr::knit_exit()
 }</code></pre>
 <pre><code>## [1] &quot;Start analisys.&quot;</code></pre>
-<p>Unzip data and trasnfer all information to a data frame Load and clean data</p>
+<p>Unzip data and trasnfer all information to a data frame Load and clean data. Transform all relevant variables in uppercase and date is formated</p>
 <pre class="r"><code>    stormdata &lt;- read.csv(file = &quot;./FStormData.csv.bz2&quot;)
     # Clean data
-    stormdata$EVTYPE &lt;- toupper(stormdata$EVTYPE)
+    stormdata$EVTYPE &lt;- (toupper(stormdata$EVTYPE))
     stormdata$PROPDMGEXP &lt;- toupper(stormdata$PROPDMGEXP)
     stormdata$CROPDMGEXP &lt;- toupper(stormdata$CROPDMGEXP)
     stormdata$BGN_DATE &lt;- as.POSIXlt(stormdata$BGN_DATE, format = &quot;%m/%d/%Y %H:%M:%S&quot;)</code></pre>
 <div id="dangerous-events-with-respect-to-population-health" class="section level4">
 <h4>Dangerous Events with respect to Population Health</h4>
+<p>Prepare data to read fatalities and injuries by type of event</p>
+<pre class="r"><code>    totalinjuries &lt;- with(stormdata, aggregate(x = INJURIES, by = list(EVTYPE), FUN = sum))
+    totalfatalities &lt;- with(stormdata, aggregate(x = FATALITIES, by = list(EVTYPE), FUN = sum))
+    names(totalinjuries) &lt;- c(&quot;Event&quot;, &quot;Injuries&quot;)
+    names(totalfatalities) &lt;- c(&quot;Event&quot;, &quot;Fatalities&quot;)
+    totalinjsort &lt;- totalinjuries[order(totalinjuries$Injuries, decreasing = TRUE),]
+    totalfatsort &lt;- totalfatalities[order(totalfatalities$Fatalities, decreasing = TRUE),]
+    totalinjsort[1:20,]</code></pre>
+<pre><code>##                  Event Injuries
+## 758            TORNADO    91346
+## 779          TSTM WIND     6957
+## 154              FLOOD     6789
+## 116     EXCESSIVE HEAT     6525
+## 418          LIGHTNING     5230
+## 243               HEAT     2100
+## 387          ICE STORM     1975
+## 138        FLASH FLOOD     1777
+## 685  THUNDERSTORM WIND     1488
+## 212               HAIL     1361
+## 888       WINTER STORM     1321
+## 372  HURRICANE/TYPHOON     1275
+## 320          HIGH WIND     1137
+## 274         HEAVY SNOW     1021
+## 875           WILDFIRE      911
+## 711 THUNDERSTORM WINDS      908
+## 28            BLIZZARD      805
+## 171                FOG      734
+## 873   WILD/FOREST FIRE      545
+## 105         DUST STORM      440</code></pre>
+<pre class="r"><code>    totalfatsort[1:20,]</code></pre>
+<pre><code>##                       Event Fatalities
+## 758                 TORNADO       5633
+## 116          EXCESSIVE HEAT       1903
+## 138             FLASH FLOOD        978
+## 243                    HEAT        937
+## 418               LIGHTNING        816
+## 779               TSTM WIND        504
+## 154                   FLOOD        470
+## 524             RIP CURRENT        368
+## 320               HIGH WIND        248
+## 19                AVALANCHE        224
+## 888            WINTER STORM        206
+## 525            RIP CURRENTS        204
+## 245               HEAT WAVE        172
+## 125            EXTREME COLD        162
+## 685       THUNDERSTORM WIND        133
+## 274              HEAVY SNOW        127
+## 126 EXTREME COLD/WIND CHILL        125
+## 312               HIGH SURF        104
+## 604             STRONG WIND        103
+## 28                 BLIZZARD        101</code></pre>
 </div>
-<div id="economic-effects-of-weather-events" class="section level4">
-<h4>Economic Effects of Weather Events</h4>
+<div id="economic-efects-of-weather-events" class="section level4">
+<h4>Economic Efects of Weather Events</h4>
+<p>Prepare data to read crop and properties damages</p>
+<pre class="r"><code>    totalcrop &lt;- with(stormdata, aggregate(x = CROPDMG, by = list(EVTYPE), FUN = sum))
+    totalprop &lt;- with(stormdata, aggregate(x = PROPDMG, by = list(EVTYPE), FUN = sum))
+    names(totalcrop) &lt;- c(&quot;Event&quot;, &quot;Cropdamage&quot;)
+    names(totalprop) &lt;- c(&quot;Event&quot;, &quot;Propdamage&quot;)
+    totalcropsort &lt;- totalinjuries[order(totalinjuries$Injuries, decreasing = TRUE),]
+    totalpropsort &lt;- totalfatalities[order(totalfatalities$Fatalities, decreasing = TRUE),]
+    totalinjsort[1:20,]</code></pre>
+<pre><code>##                  Event Injuries
+## 758            TORNADO    91346
+## 779          TSTM WIND     6957
+## 154              FLOOD     6789
+## 116     EXCESSIVE HEAT     6525
+## 418          LIGHTNING     5230
+## 243               HEAT     2100
+## 387          ICE STORM     1975
+## 138        FLASH FLOOD     1777
+## 685  THUNDERSTORM WIND     1488
+## 212               HAIL     1361
+## 888       WINTER STORM     1321
+## 372  HURRICANE/TYPHOON     1275
+## 320          HIGH WIND     1137
+## 274         HEAVY SNOW     1021
+## 875           WILDFIRE      911
+## 711 THUNDERSTORM WINDS      908
+## 28            BLIZZARD      805
+## 171                FOG      734
+## 873   WILD/FOREST FIRE      545
+## 105         DUST STORM      440</code></pre>
+<pre class="r"><code>    totalfatsort[1:20,]</code></pre>
+<pre><code>##                       Event Fatalities
+## 758                 TORNADO       5633
+## 116          EXCESSIVE HEAT       1903
+## 138             FLASH FLOOD        978
+## 243                    HEAT        937
+## 418               LIGHTNING        816
+## 779               TSTM WIND        504
+## 154                   FLOOD        470
+## 524             RIP CURRENT        368
+## 320               HIGH WIND        248
+## 19                AVALANCHE        224
+## 888            WINTER STORM        206
+## 525            RIP CURRENTS        204
+## 245               HEAT WAVE        172
+## 125            EXTREME COLD        162
+## 685       THUNDERSTORM WIND        133
+## 274              HEAVY SNOW        127
+## 126 EXTREME COLD/WIND CHILL        125
+## 312               HIGH SURF        104
+## 604             STRONG WIND        103
+## 28                 BLIZZARD        101</code></pre>
 </div>
 </div>
 <div id="results" class="section level3">

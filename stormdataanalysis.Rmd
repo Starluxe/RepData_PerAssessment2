@@ -28,17 +28,40 @@ if ("FStormData.csv.bz2" %in% filelist){
 }
 ```
 Unzip data and trasnfer all information to a data frame
-Load and clean data
+Load and clean data. Transform all relevant variables in uppercase and date is formated
 ```{r loaddata, echo=TRUE, cache=TRUE}
     stormdata <- read.csv(file = "./FStormData.csv.bz2")
     # Clean data
-    stormdata$EVTYPE <- toupper(stormdata$EVTYPE)
+    stormdata$EVTYPE <- (toupper(stormdata$EVTYPE))
     stormdata$PROPDMGEXP <- toupper(stormdata$PROPDMGEXP)
     stormdata$CROPDMGEXP <- toupper(stormdata$CROPDMGEXP)
     stormdata$BGN_DATE <- as.POSIXlt(stormdata$BGN_DATE, format = "%m/%d/%Y %H:%M:%S")
 ```
 #### Dangerous Events with respect to Population Health
-#### Economic Effects of Weather Events
+Prepare data to read fatalities and injuries by type of event
+```{r headlthdata, cache=TRUE}
+    totalinjuries <- with(stormdata, aggregate(x = INJURIES, by = list(EVTYPE), FUN = sum))
+    totalfatalities <- with(stormdata, aggregate(x = FATALITIES, by = list(EVTYPE), FUN = sum))
+    names(totalinjuries) <- c("Event", "Injuries")
+    names(totalfatalities) <- c("Event", "Fatalities")
+    totalinjsort <- totalinjuries[order(totalinjuries$Injuries, decreasing = TRUE),]
+    totalfatsort <- totalfatalities[order(totalfatalities$Fatalities, decreasing = TRUE),]
+    totalinjsort[1:20,]
+    totalfatsort[1:20,]
+```
+
+#### Economic Efects of Weather Events
+Prepare data to read crop and properties damages
+```{r damdata, cache=TRUE}
+    totalcrop <- with(stormdata, aggregate(x = CROPDMG, by = list(EVTYPE), FUN = sum))
+    totalprop <- with(stormdata, aggregate(x = PROPDMG, by = list(EVTYPE), FUN = sum))
+    names(totalcrop) <- c("Event", "Cropdamage")
+    names(totalprop) <- c("Event", "Propdamage")
+    totalcropsort <- totalinjuries[order(totalinjuries$Injuries, decreasing = TRUE),]
+    totalpropsort <- totalfatalities[order(totalfatalities$Fatalities, decreasing = TRUE),]
+    totalinjsort[1:20,]
+    totalfatsort[1:20,]
+```
 
 ### Results
 ####  1.- Health impact
