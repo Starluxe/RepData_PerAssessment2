@@ -1,3 +1,6 @@
+---
+output: html_document
+---
 ## Analysis of environmental events that have the greatest impact in the US.
     Created by Luciano Guerra
 
@@ -11,7 +14,7 @@ Analisys data is downloaded from  [StormData](https://d396qusza40orc.cloudfront.
 and is saved in  [working directory](E:/Luciano/R_WorkingDir/Reproducible Research/RepData_PeerAssessment2").
 
 Prepare working folder:
-```{r createwfolder, echo=TRUE}
+```{r createwfolder, echo=TRUE, echo=TRUE}
 # URLfile <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
 mywd <- "E:/Luciano/R_WorkingDir/Reproducible Research/RepData_PeerAssessment2"
 actwd <- getwd()
@@ -29,7 +32,7 @@ if ("FStormData.csv.bz2" %in% filelist){
 ```
 Unzip data and trasnfer all information to a data frame
 Load and clean data. Transform all relevant variables in uppercase and date is formated
-```{r loaddata, echo=TRUE, cache=TRUE}
+```{r loaddata, echo=TRUE, cache=TRUE, echo=TRUE}
     stormdata <- read.csv(file = "./FStormData.csv.bz2")
     # Clean data
     stormdata$EVTYPE <- (toupper(stormdata$EVTYPE))
@@ -39,7 +42,7 @@ Load and clean data. Transform all relevant variables in uppercase and date is f
 ```
 #### Dangerous Events with respect to Population Health
 Prepare data to read fatalities and injuries by type of event
-```{r headlthdata, cache=TRUE}
+```{r headlthdata, cache=TRUE, echo=TRUE}
     totalinjuries <- with(stormdata, aggregate(x = INJURIES, by = list(EVTYPE), FUN = sum))
     totalfatalities <- with(stormdata, aggregate(x = FATALITIES, by = list(EVTYPE), FUN = sum))
     names(totalinjuries) <- c("Event", "Injuries")
@@ -49,20 +52,48 @@ Prepare data to read fatalities and injuries by type of event
     totalinjsort[1:20,]
     totalfatsort[1:20,]
 ```
-
+`r totalinjsort$Injuries[1]'
 #### Economic Efects of Weather Events
 Prepare data to read crop and properties damages
-```{r damdata, cache=TRUE}
+```{r damdata, cache=TRUE, echo=TRUE}
     totalcrop <- with(stormdata, aggregate(x = CROPDMG, by = list(EVTYPE), FUN = sum))
     totalprop <- with(stormdata, aggregate(x = PROPDMG, by = list(EVTYPE), FUN = sum))
     names(totalcrop) <- c("Event", "Cropdamage")
     names(totalprop) <- c("Event", "Propdamage")
-    totalcropsort <- totalinjuries[order(totalinjuries$Injuries, decreasing = TRUE),]
-    totalpropsort <- totalfatalities[order(totalfatalities$Fatalities, decreasing = TRUE),]
+    totalcropsort <- totalcrop[order(totalcrop$Cropdamage, decreasing = TRUE),]
+    totalpropsort <- totalprop[order(totalprop$Propdamage, decreasing = TRUE),]
     totalinjsort[1:20,]
-    totalfatsort[1:20,]
+    totalpropsort[1:20,]
 ```
+The most harmful with respect to population health:
+
+- Injuries: `r totalinjsort$Injuries[1]` 
+- Fatalities: `r totalfatsort$Fatalities[1]` 
+
+Types of events that have the greatest economic consequences:
+
+- Crop damages: `r totalcropsort$Cropdamage[1]`
+- Properties damages: `r totalpropsort$Propdamage[1]`
 
 ### Results
 ####  1.- Health impact
+
+More severe weather events by number of injured.
+```{r injuriesplot, echo=TRUE}
+    par(mar = c(12,4,3,2), las = 3)
+    barplot(totalinjsort$Injuries[1:10], names.arg = totalinjsort$Event[1:10], 
+            col = "red", main = "More severe weather events by number of injured.",
+            ylab = "Injuries")
+```
+
+More severe weather events by number of fatalities.
+
+```{r fatalitiesplot, echo=TRUE}
+    par(mar = c(12,4,3,2), las = 3)
+    barplot(totalfatsort$Fatalities[1:10], names.arg = totalfatsort$Event[1:10], 
+            col = "blue", main = "More severe weather events by number of fatalities.",
+            ylab = "Fatalities")
+```
+
 ####  2.- Economic impact
+
